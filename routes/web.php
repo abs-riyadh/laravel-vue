@@ -1,4 +1,4 @@
 <?php
 
-Route::get('getUser','UserController@getUser');
+Route::get('user/getUsers','UserController@getUser');
 Route::resource('user','UserController');
