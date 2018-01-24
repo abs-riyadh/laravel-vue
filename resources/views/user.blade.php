@@ -8,7 +8,7 @@
 <div id="app">
 	<Myheader></Myheader>
 		<div class="row">
-			<router-view></router-view>
+			<router-view></router-view>			
 		</div>
 	<Myfooter></Myfooter>
 </div>

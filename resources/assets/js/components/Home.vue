@@ -3,7 +3,8 @@
 		<div class="panel panel-default">
 		  <div class="panel-heading">
 		  	User Details 
-		  	<button class="btn btn-success btn-sm pull-right">Add New</button>
+		  	<button v-if="loading" class="btn btn-primary btn-sm pull-right"> <i class="glyphicon glyphicon-refresh"></i></button> &nbsp;
+		  	<button class="btn btn-success btn-sm pull-right" @click="openAdd">Add New </button>
 		  </div>
 		  <div class="panel-body">
 			<table class="table table-bordered">
@@ -30,36 +31,63 @@
 			</table>
 		  </div>
 		</div>
+		<Add :openmodal="addActive" @closeRequest="close"></Add>
 	</div>
 </template>
-
 <script>
-	export default{
-		data(){
-			return {
-				users: {},
-				errors: {}
-			}
+let Add = require('./Add.vue');
+export default{
+	components: {Add},
+	data(){
+		return {
+			users: {},
+			errors: {},
+			loading: false,
+			addActive: ''
+		}
+	},
+	mounted: function(){
+		this.loading = !this.loading; 
+		axios.get('/user/getUsers')
+			.then((res)=> {
+				this.loading = !this.loading;
+				this.users = res.data;
+			})
+			.catch((error)=> {
+				this.loading = !this.loading;
+				this.error = error.response.data.errors;
+			});
+	},
+	methods: {
+		openAdd(){
+			this.addActive = 'show';
 		},
-		created(){
-			axios.get('/user/getUsers')
-				.then((res)=>$this.users = res.data)
-				.catch((error)=>this.error = error);
+		close(){
+			this.addActive = '';	
 		},
-		methods: {
-			showUser(id,key){
+		showAddModal(){
 
-			},
-			editUser(id,key){
+		},
+		showUser(id,key){
 
-			},
-			deleteUser(id,key){
-				if (confirm('Are you sure?')) {
-					axios.delete(`/user/${id}`)
-						.then((res)=>$this.users = res.data)
-						.catch((error)=>this.error = error.response.data.errors);
-				}
+		},
+		editUser(id,key){
+
+		},
+		deleteUser(id,key){
+			this.loading = !this.loading;
+			if (confirm('Are you sure?')) {
+				axios.delete(`/user/${id}`)
+					.then((res)=>{
+						this.users.splice(key,1);
+						this.loading = !this.loading;
+					})
+					.catch((error)=>{
+						this.loading = !this.loading;
+						this.error = error.response.data.errors;
+					});
 			}
 		}
 	}
+}
 </script>
