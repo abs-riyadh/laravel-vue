@@ -22,8 +22,8 @@
 						<td>{{user.name}}</td>
 						<td>{{user.email}}</td>
 						<td>
-							<button class="btn btn-sm btn-info" @click="showUser(user.id,key)">Show</button>
-							<button class="btn btn-sm btn-primary" @click="editUser(user.id,key)">Edit</button>
+							<button class="btn btn-sm btn-info" @click="openShow(key)">Show</button>
+							<button class="btn btn-sm btn-primary" @click="editShow(key)">Edit</button>
 							<button class="btn btn-sm btn-danger" @click="deleteUser(user.id,key)">Delete</button>
 						</td>
 					</tr>	
@@ -32,18 +32,24 @@
 		  </div>
 		</div>
 		<Add :openmodal="addActive" @closeRequest="close"></Add>
+		<Show :openmodal="showActive" @closeRequest="close"></Show>
+		<Edit :openmodal="editActive" @closeRequest="close"></Edit>
 	</div>
 </template>
 <script>
 let Add = require('./Add.vue');
+let Show = require('./Show.vue');
+let Edit = require('./Edit.vue');
 export default{
-	components: {Add},
+	components: {Add,Show,Edit},
 	data(){
 		return {
 			users: {},
 			errors: {},
 			loading: false,
-			addActive: ''
+			addActive: '',
+			showActive: '',
+			editActive: ''
 		}
 	},
 	mounted: function(){
@@ -61,18 +67,17 @@ export default{
 	methods: {
 		openAdd(){
 			this.addActive = 'show';
+		},		
+		openShow(key){
+			this.$children[1].user = this.users[key];
+			this.showActive = 'show';
+		},
+		editShow(key){
+			this.$children[2].user = this.users[key];
+			this.editActive = 'show';
 		},
 		close(){
-			this.addActive = '';	
-		},
-		showAddModal(){
-
-		},
-		showUser(id,key){
-
-		},
-		editUser(id,key){
-
+			this.addActive = this.showActive = this.editActive = '';	
 		},
 		deleteUser(id,key){
 			this.loading = !this.loading;
